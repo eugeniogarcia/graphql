@@ -1,220 +1,222 @@
-scalar DateTime
+scalar timestamp
 
 """
-A user who has been authorized by GitHub at least once
+Usuario autorizado en Githib
 """
 type User {
     """
-    The user's unique GitHub login
+    Id de GitHub
     """
     githubLogin: ID!
     """
-    The user's first and last name
+    Nombre y apellidos
     """
     name: String
     """
-    A url for the user's GitHub profile photo
+    url de la foto del usuario
     """
     avatar: String
     """
-    All of the photos posted by this user
+    Fotos publicadas por el usuario
     """
     postedPhotos: [Photo!]!
     """
-    All of the photos in which this user appears
+    Todas las fotos en las que aparece el usuario
     """
     inPhotos: [Photo!]!
 }
 
 """
-The details of a photo
+Detalles de una foto
 """
 type Photo {
     """
-    A photo's unique id
+    Id de la foto
     """
     id: ID!
     """
-    A photo's name
+    Nombre de la foto
     """
     name: String!
     """
-    A photo's url
+    url de la foto
     """
     url: String!
     """
-    (optional) A photo's description
+    Descripción de la foto
     """
     description: String
     """
-    A photo's category
+    Categoria de la foto
     """
     category: PhotoCategory!
     """
-    A user that posted the photo
+    Usuario que publica la foto
     """
     postedBy: User!
     """
-    The list of the user's tagged in the photo
+    Usuarios que están identificados en la foto
     """
     taggedUsers: [User!]!
     """
-    The time the photo was created
+    Cuando se creo la foto
     """
-    created: DateTime!
+    created: timestamp!
 }
 
 """
-A category enum of photos
+Lista de categorias de fotos
 """
 enum PhotoCategory {
     """
-    describe a selfie photo
+    Selfie
     """
     SELFIE
     """
-    describe a portrait photo
+    Retrato
     """
     PORTRAIT
     """
-    describe an action photo
+    Acción
     """
     ACTION
     """
-    describe a landscape photo
+    Panorama
     """
     LANDSCAPE
     """
-    describe a graphic photo
+    Graficos
     """
     GRAPHIC
 }
 
 """
-The input sent with the postPhoto Mutation
+Datos de entrada para una foto
 """
 input PostPhotoInput {
     """
-    The name of the new photo
+    Nombre
     """
     name: String!
     """
-    (optional) The category that defines the photo (default = PORTRAIT)
+    Categoria de la foto (por defecto es Retrato)
     """
     category: PhotoCategory = PORTRAIT
     """
-    (optional) A brief description of the photo
+    Descripción de la foto
     """
     description: String
 }
 
 """
-A Custom type for Auth Object
+Autorización
 """
 type AuthPayload {
     """
-    A jwt token returned after a successful auth
+    jwt token
     """
     token: String!
     """
-    A user that was authenticated
+    Usuario autenticado
     """
     user: User!
 }
 
 """
-A root type showing all the queries (READ)
+Root type donde se definen todas las queries (lectura) que podemos hacer
 """
 type Query {
     """
-    A query that return the authenticated user from a token
+    Quien soy yo
     """
     me: User
     """
-    A query that returns the total number of photos
+    Numero de fotos
     """
     totalPhotos: Int!
     """
-    A query that returns all the photos
+    Listado de fotos
     """
     allPhotos: [Photo!]!
     """
-    A query that returns a single photo based on its ID
+    Recupera la foto con un determinado ID
     """
     Photo(
         """
-        the id of the photo to return
+        id
         """
         id: ID!
     ): Photo
     """
-    A query that returns the total number of users
+    Número total de usuarios
     """
     totalUsers: Int!
     """
-    A query that returns all the users
+    Lista de usuarios
     """
     allUsers: [User!]!
     """
-    A query that logs a user in
+    Usuario con un determinado id
     """
     User(login: ID!): User
 }
 
 """
-A root type showing all the mutations (CREATE, UPDATE and DELETE)
+Root type donde se definen todas las actualizaciones (CREATE, UPDATE and DELETE) que podemos hacer
 """
 type Mutation {
     """
-    A mutation to post a new photo
+    Guarda una foto
     """
     postPhoto(
         """
-        The input sent with the postPhoto Mutation
+        Datos de la foto a crear
         """
         input: PostPhotoInput!
     ): Photo!
+    creaPhoto(parent, args, { db, currentUser }) {
+
 
     """
-    A mutation to tag a photo with a user
+    Identifica un usuario en una foto
     """
     tagPhoto(
         """
-        The user's unique GitHub login
+        Id de GitHub del usuario
         """
         githubLogin: ID!
         """
-        The ID of the photo
+        ID de la foto
         """
         photoID: ID!
     ): Photo!
 
     """
-    A mutation to Authenticate a Github user
+    Autentica un usuario
     """
     githubAuth(
         """
-        A password or GitHub token
+        Access code del usuario
         """
         code: String!
     ): AuthPayload!
 
     """
-    A mutation to add fake(mocked) users
+    Crea usuarios ficticios
     """
     addFakeUsers(
         """
-        the count of user to be added (defaults = 1)
+        Número de usuarios ficticios a añadir (por defecto = 1)
         """
         count: Int = 1
     ): [User!]!
 
     """
-    A mutation to authenticate a fake user
+    Autentifica un usuario ficticio
     """
     fakeUserAuth(
         """
-        The user's unique GitHub login
+        Id del usuario
         """
         githubLogin: ID!
     ): AuthPayload!
