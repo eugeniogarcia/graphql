@@ -174,8 +174,6 @@ type Mutation {
         """
         input: PostPhotoInput!
     ): Photo!
-    creaPhoto(parent, args, { db, currentUser }) {
-
 
     """
     Identifica un usuario en una foto
