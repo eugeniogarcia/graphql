@@ -1,55 +1,223 @@
-scalar DateTime
-
-type Query {
-    me: User
-    totalPhotos: Int!
-    allPhotos: [Photo!]!
-}
-
-type Mutation {
-    postPhoto(name: String! description: String category: PhotoCategory!=PORTRAIT): Photo!
-    creaPhoto(input:PostPhotoInput): Photo!
-    githubAuth(code: String!): AuthPayload!
-    addFakeUsers(count: Int = 1): [User!]!
-    fakeUserAuth(githubLogin: ID!): AuthPayload!
-}
-
 scalar timestamp
 
-type Photo {
-    id: ID!
-    url: String!
-    name: String!
-    description: String
-    category: PhotoCategory!
-    postedBy: User!
-    taggedUsers: [User!]!
-    created: timestamp!
-}
-
-enum PhotoCategory {
-    SELFIE
-    PORTRAIT
-    ACTION
-    LANDSCAPE
-    GRAPHIC
-}
-
-input PostPhotoInput {
-    name: String!
-    category: PhotoCategory=PORTRAIT
-    description: String
-}
-
+"""
+Usuario autorizado en Githib
+"""
 type User {
+    """
+    Id de GitHub
+    """
     githubLogin: ID!
+    """
+    Nombre y apellidos
+    """
     name: String
+    """
+    url de la foto del usuario
+    """
     avatar: String
+    """
+    Fotos publicadas por el usuario
+    """
     postedPhotos: [Photo!]!
+    """
+    Todas las fotos en las que aparece el usuario
+    """
     inPhotos: [Photo!]!
 }
 
+"""
+Detalles de una foto
+"""
+type Photo {
+    """
+    Id de la foto
+    """
+    id: ID!
+    """
+    Nombre de la foto
+    """
+    name: String!
+    """
+    url de la foto
+    """
+    url: String!
+    """
+    Descripción de la foto
+    """
+    description: String
+    """
+    Categoria de la foto
+    """
+    category: PhotoCategory!
+    """
+    Usuario que publica la foto
+    """
+    postedBy: User!
+    """
+    Usuarios que están identificados en la foto
+    """
+    taggedUsers: [User!]!
+    """
+    Cuando se creo la foto
+    """
+    created: timestamp!
+}
+
+"""
+Lista de categorias de fotos
+"""
+enum PhotoCategory {
+    """
+    Selfie
+    """
+    SELFIE
+    """
+    Retrato
+    """
+    PORTRAIT
+    """
+    Acción
+    """
+    ACTION
+    """
+    Panorama
+    """
+    LANDSCAPE
+    """
+    Graficos
+    """
+    GRAPHIC
+}
+
+"""
+Datos de entrada para una foto
+"""
+input PostPhotoInput {
+    """
+    Nombre
+    """
+    name: String!
+    """
+    Categoria de la foto (por defecto es Retrato)
+    """
+    category: PhotoCategory = PORTRAIT
+    """
+    Descripción de la foto
+    """
+    description: String
+}
+
+"""
+Autorización
+"""
 type AuthPayload {
+    """
+    jwt token
+    """
     token: String!
+    """
+    Usuario autenticado
+    """
     user: User!
+}
+
+"""
+Root type donde se definen todas las queries (lectura) que podemos hacer
+"""
+type Query {
+    """
+    Quien soy yo
+    """
+    me: User
+    """
+    Numero de fotos
+    """
+    totalPhotos: Int!
+    """
+    Listado de fotos
+    """
+    allPhotos: [Photo!]!
+    """
+    Recupera la foto con un determinado ID
+    """
+    Photo(
+        """
+        id
+        """
+        id: ID!
+    ): Photo
+    """
+    Número total de usuarios
+    """
+    totalUsers: Int!
+    """
+    Lista de usuarios
+    """
+    allUsers: [User!]!
+    """
+    Usuario con un determinado id
+    """
+    User(login: ID!): User
+}
+
+"""
+Root type donde se definen todas las actualizaciones (CREATE, UPDATE and DELETE) que podemos hacer
+"""
+type Mutation {
+    """
+    Guarda una foto
+    """
+    postPhoto(
+        """
+        Datos de la foto a crear
+        """
+        input: PostPhotoInput!
+    ): Photo!
+    creaPhoto(parent, args, { db, currentUser }) {
+
+
+    """
+    Identifica un usuario en una foto
+    """
+    tagPhoto(
+        """
+        Id de GitHub del usuario
+        """
+        githubLogin: ID!
+        """
+        ID de la foto
+        """
+        photoID: ID!
+    ): Photo!
+
+    """
+    Autentica un usuario
+    """
+    githubAuth(
+        """
+        Access code del usuario
+        """
+        code: String!
+    ): AuthPayload!
+
+    """
+    Crea usuarios ficticios
+    """
+    addFakeUsers(
+        """
+        Número de usuarios ficticios a añadir (por defecto = 1)
+        """
+        count: Int = 1
+    ): [User!]!
+
+    """
+    Autentifica un usuario ficticio
+    """
+    fakeUserAuth(
+        """
+        Id del usuario
+        """
+        githubLogin: ID!
+    ): AuthPayload!
 }

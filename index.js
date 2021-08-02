@@ -1,6 +1,5 @@
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
-
 const { MongoClient } = require('mongodb')
 const { readFileSync } = require('fs')
 const expressPlayground = require('graphql-playground-middleware-express').default
@@ -11,7 +10,6 @@ var typeDefs = readFileSync('./typeDefs.graphql', 'UTF-8')
 
 async function start() {
   const app = express()
-  
   const MONGO_DB = process.env.DB_HOST
   let db
 
@@ -43,7 +41,7 @@ async function start() {
   await server.start()
 
   server.applyMiddleware({ app })
-  
+
   app.get('/playground', expressPlayground({ endpoint: '/graphql' }))
 
   app.get('/', (req, res) => {
