@@ -1,0 +1,35 @@
+{
+  "name": "photo-share-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "apollo-boost": "0.4.9",
+    "apollo-cache-persist": "0.1.1",
+    "graphql": "14.3.1",
+    "graphql-request": "^3.5.0",
+    "lodash.flowright": "^3.5.0",
+    "react": "16.8.0",
+    "react-apollo": "3.1.5",
+    "react-dom": "16.8.0",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "4.0.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
