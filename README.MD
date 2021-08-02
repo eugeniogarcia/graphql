@@ -327,7 +327,7 @@ input PostPhotoInput {
 }
 ```
 
-## Resolvers
+# Resolvers
 
 En el esquema hemos definido todos los tipos y las operaciones que pueden hacerse con la API. En el resolver vamos a indicar cuales de los tipos son tipos raiz. Siempre tenemos que obligatoriamente tener dos tipos raiz, __Query__ y __Mutation__, y opcionalmente aquellos que necesitemos para resolver algun otro tipo - más sobre esto a continuación.
 
@@ -335,7 +335,7 @@ En el tipo __Query__ definiremos todas las operaciones de consulta que vamos a p
 
 Adicionalmente habrá ocasiones en las que queramos _resolver_ algún otro tipo, por ejemplo, para automáticamente informar algun atributo como puede ser un time-stamp. También podemos definir tipos scalares. Los tipos escalareas se implementan también en el resolver.
 
-### Tipo escalar
+## Tipo escalar
 
 Supongamos que queremos definir un tipo escalar. Lo definieremos en nuestro esquema:
 
@@ -377,7 +377,7 @@ En el resolver indicaremos en que consiste este tipo. Nuestro resolver tendrá l
 
 Definimos el tipo con `GraphQLScalarType`, indicamos el nombre, así como la forma en que se debe serializar, y procesar el valor.
 
-### Index.js
+## Index.js
 
 Es muy habitual tener los distintos resolvers en diferentes modulos. Podemos combinarlos todos creando un directorio con todos ellos, y un _index.js_ que los agrupe todos en nuestro resolver:
 
@@ -444,7 +444,7 @@ module.exports = {
 
 Efectivamente tenemos los escalares que hemos definido, así como resolvers para _User_ y _Photo_.
 
-### Root types - otros Photo y User
+## Root types - otros Photo y User
 
 Dejamos para el final los root types _Query_ y _Mutation_. Hemos añadido, de forma opcional, dos tipos root para _Photo_ y _User_. Cuando alguna _Query_ o _Mutation_ retorne un tipo como _Photo_ o _User_, lo que se hara por defecto es retornar el tipo tal cual lo genere el resolver. Si queremos "manipularlo" podemos crear un root resolver. Por ejemplo, en nuestro caso cuando se este retornando un _Photo_:
 
@@ -471,3 +471,32 @@ Photo: {
 
 Notese como todos los resolvers tienen la siguiente firma __(parent, args, context)__. Con parent accedemos a los datos que estan llegando al resolver. Asi en este caso _parent_ hace referencia a la _Photo_ que llega como entrada al resolver. El resolver transformará esta _Photo_ y será este resultado transformado el que se devuelva con la api.
 
+## Contexto
+
+En el contexto incluiremos todos aquellos __cross-cutting concerns__ que sean necesarios al implementar los distintos resolvers. Al instanciar el servidor de Apollo, además de indicar el schema y los resolvers, podemos __opcionalmente__ indicar un contexto.
+
+El contexto puede ser un objeto o método. Usaremos un objeto cuando el _contenido_ no deba cambiar de petición a petición. Si por el contrario en cada petición tenemos que _revisar_ el contexto, especificaremos el contexto como un método. De esta forma el método que especifiquemos se invocará con cada petición. 
+
+En este caso hemos definido un método, porque queremos ver cual es la cabecera de autenticación para obtener los datos del usuario. 
+
+```js
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: async ({ req }) => {
+      const githubToken = req.headers.authorization
+      const currentUser = await db.collection('users').findOne({ githubToken })
+      return { db, currentUser }
+    }
+  })
+```
+
+El contexto en nuestro caso es:
+
+```js
+{ db, currentUser }
+```
+
+Es decir la base de datos de mongo - que no cambia de petición a petición - y el usuario - que actualizamos/verificamos en cada petición.
+
+# Cliente
