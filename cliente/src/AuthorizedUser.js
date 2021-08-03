@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
-import { Query, Mutation, withApollo, compose } from 'react-apollo'
+import { Query, Mutation, withApollo} from 'react-apollo'
+import { flowRight as compose } from 'lodash';
 import { ROOT_QUERY } from './App'
 import { gql } from 'apollo-boost'
 
@@ -21,7 +22,7 @@ const CurrentUser = ({ name, avatar, logout }) =>
 //Muestra la información obtenida con la query me
 const Me = ({ logout, requestCode, signingIn }) =>
     <Query query={ROOT_QUERY} fetchPolicy="cache-only">
-        {({ loading, data }) => data.me ?
+        {({ loading, data }) => (data && data.me) ?
             <CurrentUser {...data.me} logout={logout} /> :
             loading ?
                 <p>loading... </p> :

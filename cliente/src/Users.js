@@ -14,7 +14,7 @@ const ADD_FAKE_USERS_MUTATION = gql`
 `
 
 const Users = () =>
-    <Query query={ROOT_QUERY} fetchPolicy="cache-and-network" pollInterval={1000}>
+    <Query query={ROOT_QUERY} fetchPolicy="cache-and-network" pollInterval={30000}>
         {({ data, loading, refetch }) => loading ?
             <p>loading users...</p> :
             <UserList count={data.totalUsers}
