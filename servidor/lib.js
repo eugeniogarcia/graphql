@@ -39,9 +39,6 @@ const generateFakeUsers = count =>
     fetch(`https://randomuser.me/api/?results=${count}`)
         .then(res => res.json())
 
-
-
-
 const saveFile = (stream, path) => 
     new Promise((resolve, reject) => {
         stream.on('error', error => {
@@ -57,5 +54,16 @@ const uploadFile = async (file, path) => {
     const { stream } = await file
     return saveFile(stream, path)
 }
+
+const uploadStream = (stream, path) =>
+    new Promise((resolve, reject) => {
+        stream.on('error', error => {
+            if (stream.truncated) {
+                fs.unlinkSync(path)
+            }
+            reject(error)
+        }).on('end', resolve)
+            .pipe(fs.createWriteStream(path))
+    })
 
 module.exports = { authorizeWithGithub, findBy,generateFakeUsers, uploadFile}

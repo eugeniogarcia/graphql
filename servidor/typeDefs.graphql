@@ -91,24 +91,6 @@ enum PhotoCategory {
 }
 
 """
-Datos de entrada para una foto
-"""
-input PostPhotoInput {
-    """
-    Nombre
-    """
-    name: String!
-    """
-    Categoria de la foto (por defecto es Retrato)
-    """
-    category: PhotoCategory = PORTRAIT
-    """
-    Descripción de la foto
-    """
-    description: String
-}
-
-"""
 Autorización
 """
 type AuthPayload {
@@ -218,4 +200,33 @@ type Mutation {
         """
         githubLogin: ID!
     ): AuthPayload!
+}
+
+type Subscription {
+    newPhoto: Photo!
+    newUser: User!
+}
+
+scalar Upload
+
+"""
+Datos de entrada para una foto
+"""
+input PostPhotoInput {
+    """
+    Nombre
+    """
+    name: String!
+    """
+    Categoria de la foto (por defecto es Retrato)
+    """
+    category: PhotoCategory = PORTRAIT
+    """
+    Descripción de la foto
+    """
+    description: String
+    """
+    Archivo
+    """
+    file: Upload!
 }

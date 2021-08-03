@@ -502,4 +502,108 @@ El contexto en nuestro caso es:
 
 Es decir la base de datos de mongo - que no cambia de petición a petición - y el usuario - que actualizamos/verificamos en cada petición.
 
-# Cliente
+# Subscripciones
+
+## Setup
+
+Las subscripciones utilizan websockets. Apollo Server incluye esta funcionalidad, pero necesitamos usar un servidor http:
+
+```js
+const { createServer } = require('http')
+
+etc...
+
+//Para soportar subscripciones necesitamos un servidor http
+const httpServer = createServer(app)
+server.installSubscriptionHandlers(httpServer)
+httpServer.timeout = 5000
+
+//Usamos el servidor http en lugar de la propia app express, para escuchar en el puerto 4000
+httpServer.listen({ port: 4000 }, () =>
+//app.listen({ port: 4000 }, () =>
+console.log(`GraphQL Server running at http://localhost:4000${server.graphqlPath}`)
+)
+```
+
+`server.installSubscriptionHandlers(httpServer)` incorpora el soporte para websockets. Sustituimos _app.listen_ por _httpServer.listen_
+
+## Arrancar Servidor Apollo
+
+
+## GraphQl schema
+
+Tenemos que incluir otro tipo Root, _Subscriptions_ con las subscripciones que queremos escuchar:
+
+```js
+type Subscription {
+    newPhoto: Photo!
+    newUser: User!
+}
+```
+
+Tendremos que hacer modificaciones a los resolvers, por un lado creando nuevos resolvers asociados directamente a la subscripción, y por otro lado modificando aquellas mutaciones en las que necesitemos publicar el evento.
+
+### Disparar el evento
+
+Modificaremos las mutaciones encargadas de crear una nueva foto o usuario, para que publiquen un evento. Por ejemplo, cuando se cree una nueva foto, publicaremos el evento `photo-added` con los datos de la foto, _newPhoto_:
+
+```js
+module.exports = {
+
+  postPhoto: async function (parent, args, { db, currentUser, pubsub }){
+
+    etc...
+
+    pubsub.publish('photo-added', { newPhoto })
+
+    return newPhoto
+
+  },
+```
+
+Finalmente en el resolver que implementa _Subscription_, tendremos que incluir para cada tipo definido en el esquema, su implementación. Por ejemplo, con _newPhoto_ nos subscribimos al evento `photo-added` que acabamos de crear:
+
+```js
+module.exports = {
+    newPhoto: {
+        subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('photo-added')
+    },
+
+etc...
+```
+
+__Los resolvers de Subscripciones contienen el método subscribe__.
+
+En todos estos resolvers, el que publica el evento y el que lo consume, esperan que haya un contexto, y de ese contexto estamos tomando el _pubsub_ para publicar o consumir los eventos.
+
+```js
+const { ApolloServer, PubSub } = require('apollo-server-express')
+
+etc...
+
+//Para la gestión de las subscripciones
+const pubsub = new PubSub()
+
+etc...
+
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+
+    engine: true,
+    //Validaciones
+    validationRules: [
+      depthLimit(5),
+      createComplexityLimitRule(1000, {
+        onCost: cost => console.log('query cost: ', cost)
+      })
+    ],
+    //Contexto
+    context: async ({ req }) => {
+      const githubToken = req.headers.authorization
+      const currentUser = await db.collection('users').findOne({ githubToken })
+      //En el contexto tenemos la base de datos, la subscripción, y en cada petición actualizamos la informaci´pon del usuario actual
+      return { db, currentUser, pubsub }
+    }
+  })
+```

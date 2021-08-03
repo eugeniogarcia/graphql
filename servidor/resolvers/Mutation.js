@@ -1,10 +1,11 @@
 const { authorizeWithGithub } = require('../lib')
 const fetch = require('node-fetch')
 const { ObjectID } = require('mongodb')
+const { uploadStream } = require('../lib')
 
 module.exports = {
 
-  postPhoto: async function (parent, args, { db, currentUser }){
+  postPhoto: async function (parent, args, { db, currentUser, pubsub }){
 
     if (!currentUser) {
       throw new Error('only an authorized user can post a photo')
@@ -18,6 +19,14 @@ module.exports = {
 
     const { insertedIds } = await db.collection('photos').insert(newPhoto)
     newPhoto.id = insertedIds[0]
+
+    pubsub.publish('photo-added', { newPhoto })
+
+    //Identifica la ruta
+    var toPath = path.join(__dirname, '..', 'assets', 'photos', `${newPhoto.id}.jpg`)
+    //Carga el archivo en la ruta
+    const { stream } = await args.input.file
+    await uploadStream(stream, toPath)
 
     return newPhoto
 
@@ -85,6 +94,13 @@ module.exports = {
     }))
 
     await db.collection('users').insert(users)
+
+    var newUsers = await db.collection('users')
+      .find()
+      .sort({ _id: -1 })
+      .limit(count)
+      .toArray()
+    newUsers.forEach(newUser => pubsub.publish('user-added', { newUser }))
 
     return users
   },
