@@ -18,12 +18,12 @@ export const ROOT_QUERY = gql`
     }
 `
 
-const App = () => 
+const App = () =>
   <BrowserRouter>
     <div>
-        <AuthorizedUser />
-        <Users />
+      <AuthorizedUser />
+      <Users />
     </div>
-  </BrowserRouter>  
+  </BrowserRouter>
 
 export default App
