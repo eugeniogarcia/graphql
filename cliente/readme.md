@@ -321,3 +321,23 @@ cache.writeQuery({
     }
 })
 ```
+
+## Subscripciones
+
+### Setup
+
+Necesitamos utilizar websockets para consumir una subscripción. Tenemos que instalar en el cliente las siguientes librerias:
+
+```ps
+npm install apollo-link-ws apollo-utilities subscriptions-transport-ws
+```
+
+Añadimos los siguientes módulos en index.js:
+
+```js
+import { HttpLink, ApolloLink, split} from 'apollo-boost'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
+```
+
+### 

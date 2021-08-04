@@ -22,12 +22,12 @@ module.exports = {
 
     pubsub.publish('photo-added', { newPhoto })
 
+
     //Identifica la ruta
     var toPath = path.join(__dirname, '..', 'assets', 'photos', `${newPhoto.id}.jpg`)
     //Carga el archivo en la ruta
     const { stream } = await args.input.file
     await uploadStream(stream, toPath)
-
     return newPhoto
 
   },

@@ -506,29 +506,74 @@ Es decir la base de datos de mongo - que no cambia de petición a petición - y 
 
 ## Setup
 
+Instalamos las librerias necesarias para soportar subscripciones:
+
+```ps
+npm install subscriptions-transport-ws @graphql-tools/schema graphql-subscriptions
+```
 Las subscripciones utilizan websockets. Apollo Server incluye esta funcionalidad, pero necesitamos usar un servidor http:
 
 ```js
 const { createServer } = require('http')
+const { execute, subscribe } = require( 'graphql');
+const { SubscriptionServer } = require( 'subscriptions-transport-ws');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { PubSub } = require('graphql-subscriptions')
 
 etc...
 
-//Para soportar subscripciones necesitamos un servidor http
+//Para la gestión de las subscripciones
+const pubsub = new PubSub()
+
+etc...
+
+//Helper que nos permite definir el esquema en base a los tipos y resolvers
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+//Creamos el servidor Apollo
+const server = new ApolloServer({
+schema,
+engine: true,
+//Validaciones
+validationRules: [
+    depthLimit(5),
+    createComplexityLimitRule(1000, {
+    onCost: cost => console.log('query cost: ', cost)
+    })
+],
+//Contexto
+context: async ({ req }) => {
+    const githubToken = req.headers.authorization
+    const currentUser = await db.collection('users').findOne({ githubToken })
+    //En el contexto tenemos la base de datos, la subscripción, y en cada petición actualizamos la informaci´pon del usuario actual
+    return { db, currentUser, pubsub }
+}
+})
+
+etc...
+
 const httpServer = createServer(app)
-server.installSubscriptionHandlers(httpServer)
 httpServer.timeout = 5000
+
+//Creamos el servidor de subscripciones (procesa las conexiones websocket)
+const subscriptionServer = SubscriptionServer.create({
+schema,    
+// These are imported from `graphql`.
+execute,
+subscribe,
+}, {
+// This is the `httpServer` we created in a previous step.
+server: httpServer,
+// This `server` is the instance returned from `new ApolloServer`.
+path: server.graphqlPath,
+});
+
+etc...
 
 //Usamos el servidor http en lugar de la propia app express, para escuchar en el puerto 4000
 httpServer.listen({ port: 4000 }, () =>
 //app.listen({ port: 4000 }, () =>
-console.log(`GraphQL Server running at http://localhost:4000${server.graphqlPath}`)
-)
 ```
-
-`server.installSubscriptionHandlers(httpServer)` incorpora el soporte para websockets. Sustituimos _app.listen_ por _httpServer.listen_
-
-## Arrancar Servidor Apollo
-
 
 ## GraphQl schema
 
@@ -543,7 +588,7 @@ type Subscription {
 
 Tendremos que hacer modificaciones a los resolvers, por un lado creando nuevos resolvers asociados directamente a la subscripción, y por otro lado modificando aquellas mutaciones en las que necesitemos publicar el evento.
 
-### Disparar el evento
+## Resolvers. Disparar el evento
 
 Modificaremos las mutaciones encargadas de crear una nueva foto o usuario, para que publiquen un evento. Por ejemplo, cuando se cree una nueva foto, publicaremos el evento `photo-added` con los datos de la foto, _newPhoto_:
 
@@ -607,3 +652,12 @@ etc...
     }
   })
 ```
+
+# Enviar Archivos como argumentos (a una Mutacion GraphQL)
+
+# Validaciones
+
+```ps
+npm install graphql-depth-limit graphql-validation-complexity
+```
+
