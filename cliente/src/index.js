@@ -4,6 +4,7 @@ import App from './App'
 import { ApolloProvider } from 'react-apollo'
 import { 
     InMemoryCache, 
+    HttpLink,
     ApolloLink,
     ApolloClient,
     split
