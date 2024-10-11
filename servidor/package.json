@@ -9,21 +9,21 @@
     "start": "nodemon -e js,json,graphql"
   },
   "dependencies": {
-    "@graphql-tools/schema": "^8.0.1",
-    "apollo-server": "^3.0.2",
-    "apollo-server-express": "3.0.2",
-    "dotenv": "^10.0.0",
-    "express": "4.17.1",
-    "graphql": "^15.5.1",
+    "@graphql-tools/schema": "^10.0.6",
+    "apollo-server": "^3.13.0",
+    "apollo-server-express": "3.13.0",
+    "dotenv": "^16.4.5",
+    "express": "4.21.1",
+    "graphql": "^16.9.0",
     "graphql-depth-limit": "^1.1.0",
-    "graphql-playground-middleware-express": "1.7.22",
-    "graphql-subscriptions": "^1.2.1",
+    "graphql-playground-middleware-express": "1.7.23",
+    "graphql-subscriptions": "^2.0.0",
     "graphql-validation-complexity": "^0.4.2",
-    "mongodb": "4.0.1",
-    "node-fetch": "2.6.1",
-    "subscriptions-transport-ws": "^0.9.19"
+    "mongodb": "6.9.0",
+    "node-fetch": "3.3.2",
+    "subscriptions-transport-ws": "^0.11.0"
   },
   "devDependencies": {
-    "nodemon": "2.0.12"
+    "nodemon": "3.1.7"
   }
 }

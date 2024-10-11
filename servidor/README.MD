@@ -28,7 +28,7 @@ http://localhost:3000/?code=74af61b0d1e42c345167
 
 Grafos nos permiten representar datos que estan interconectados. Podemos hablar de nodos y _edges_. Los _edges_ pueden tener direccion o no. Un árbol binario se caracteriza por ejemplo porque cada nodo tiene dos _edges_, y porque estos _edges_ tienen dirección.
 
-Él padre de la teoría de grafos es __Euler__. Se le planteo a Euler el problema de Königsberg, o como recorrer los siete puentes de la ciudad sin pasar dos veces por ninguno de ellos. Esto es lo que se denomina una ruta Euleriana - _Eulerian path_. Un ciclo Euleriano - Elerian cycle_ - es una trayectoria en que se inicia y termina en el mismo nodo, y que pasa por cada nodo una sola vez.
+Él padre de la teoría de grafos es __Euler__. Se le planteo a Euler el problema de Königsberg, o como recorrer los siete puentes de la ciudad sin pasar dos veces por ninguno de ellos. Esto es lo que se denomina una ruta Euleriana - _Eulerian path_. Un ciclo Euleriano - _Eulerian cycle_ - es una trayectoria en que se inicia y termina en el mismo nodo, y que pasa por cada nodo una sola vez.
 
 # Tipos
 
