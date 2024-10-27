@@ -6,7 +6,7 @@ GraphQL is a query language for your API, and a server-side runtime for executin
 
 __A GraphQL service is created by defining types and fields on those types__, then __providing functions for each field on each type__. For example, a GraphQL service that tells you who the logged in user is (me) as well as that user's name might look like this:
 
-```json
+```graphql
 type Query {
   me: User
 }
