@@ -19,7 +19,7 @@ type User {
 
 __Along with functions for each field on each type__:
 
-```json
+```graphql
 function Query_me(request) {
   return request.auth.user
 }
@@ -33,7 +33,7 @@ After a GraphQL service is running (typically at a URL on a web service), it can
 
 For example, the query:
 
-```json
+```graphql
 {
   me {
     name
@@ -57,7 +57,7 @@ Could produce the following JSON result:
 
 At its simplest, GraphQL is about asking for specific fields on objects. Let's start by looking at a very simple query and the result we get when we run it:
 
-```json
+```graphql
 {
   hero {
     name
@@ -83,7 +83,7 @@ The field name returns a String type, in this case the name of the main hero of 
 
 In the previous example, we just asked for the name of our hero which returned a String, but fields can also refer to Objects. In that case, you can make a sub-selection of fields for that object. GraphQL queries can traverse related objects and their fields, letting clients fetch lots of related data in one request, instead of making several roundtrips as one would need in a classic REST architecture.
 
-```json
+```graphql
 hero {
     name
     # Queries can have comments!
@@ -123,7 +123,7 @@ Note that in this example, __the friends field returns an array of items__. Grap
 
 If the only thing we could do was traverse objects and their fields, GraphQL would already be a very useful language for data fetching. But when you add the ability to pass arguments to fields, things get much more interesting.
 
-```json
+```graphql
 {
   human(id: "1000") {
     name
@@ -147,7 +147,7 @@ returns:
 
 __In a system like REST, you can only pass a single set of arguments__ - the query parameters and URL segments in your request. __But in GraphQL, every field and nested object can get its own set of arguments__, making GraphQL a complete replacement for making multiple API fetches. You can even pass arguments into scalar fields, to implement data transformations once on the server, instead of on every client separately.
 
-```json
+```graphql
 {
   human(id: "1000") {
     name
@@ -175,7 +175,7 @@ __Arguments can be of many different types__. In the above example, we have used
 
 If you have a sharp eye, you may have noticed that, since the result object fields match the name of the field in the query but don't include arguments, you can't directly query for the same field with different arguments. __That's why you need aliases__ - they let you rename the result of a field to anything you want.
 
-```json
+```graphql
 {
   empireHero: hero(episode: EMPIRE) {
     name
@@ -209,7 +209,7 @@ Let's say we had a relatively complicated page in our app, which lets us look at
 
 That's why GraphQL includes reusable units called fragments. Fragments let you construct sets of fields, and then include them in queries where you need to. Here's an example of how you could solve the above situation using fragments:
 
-```json
+```graphql
 {
   leftComparison: hero(episode: EMPIRE) {
     ...comparisonFields
@@ -284,7 +284,7 @@ You can see how the above query would be pretty repetitive if the fields were re
 
 It is possible for __fragments to access variables declared in the query or mutation__. See variables.
 
-```json
+```graphql
 query HeroComparison($first: Int = 3) {
   leftComparison: hero(episode: EMPIRE) {
     ...comparisonFields
@@ -368,7 +368,7 @@ In several of the examples above __we have been using a shorthand syntax where w
 
 Here's an example that __includes the keyword query as operation type and HeroNameAndFriends as operation name__:
 
-```json
+```graphql
 query HeroNameAndFriends {
   hero {
     name
@@ -420,7 +420,7 @@ When we start working with variables, we need to do three things:
 
 Here's what it looks like all together:
 
-```json
+```graphql
 query HeroNameAndFriends($episode: Episode) {
   hero(episode: $episode) {
     name
@@ -476,7 +476,7 @@ __Variable definitions can be optional or required__. In the case above, since t
 
 __Default values can also be assigned to the variables in the query__ by adding the default value after the type declaration.
 
-```json
+```graphql
 query HeroNameAndFriends($episode: Episode = JEDI) {
   hero(episode: $episode) {
     name
@@ -495,7 +495,7 @@ We discussed above how variables enable us to avoid doing manual string interpol
 
 Let's construct a query for such a component:
 
-```json
+```graphql
 query Hero($episode: Episode, $withFriends: Boolean!) {
   hero(episode: $episode) {
     name
@@ -544,7 +544,7 @@ In REST, any request might end up causing some side-effects on the server, but b
 
 __Just like in queries, if the mutation field returns an object type, you can ask for nested fields__. This can be useful for fetching the new state of an object after an update. Let's look at a simple example mutation:
 
-```json
+```graphql
 mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   createReview(episode: $ep, review: $review) {
     stars
@@ -594,7 +594,7 @@ Like many other type systems, GraphQL schemas include the ability to define inte
 
 If you are querying a field that returns an interface or a union type, you will need to use inline fragments to access data on the underlying concrete type. It's easiest to see with an example:
 
-```json
+```graphql
 query HeroForEpisode($ep: Episode!) {
   hero(episode: $ep) {
     name
@@ -639,7 +639,7 @@ __Named fragments can also be used in the same way, since a named fragment alway
 
 Given that there are some situations where you don't know what type you'll get back from the GraphQL service, you need some way to determine how to handle that data on the client. GraphQL allows you to request `__typename`, a meta field, at any point in a query to get the name of the object type at that point.
 
-```json
+```graphql
 {
   search(text: "an") {
     __typename
@@ -691,7 +691,7 @@ On this page, you'll learn all you need to know about the GraphQL type system an
 
 If you've seen a GraphQL query before, you know that the GraphQL query language is basically about selecting fields on objects. So, for example, in the following query:
 
-```json
+```graphql
 {
   hero {
     name
@@ -733,7 +733,7 @@ GraphQL services can be written in any language. Since we can't rely on a specif
 
 The most basic components of a GraphQL schema are object types, which just represent a kind of object you can fetch from your service, and what fields it has. In the GraphQL schema language, we might represent it like this:
 
-```json
+```graphql
 type Character {
   name: String!
   appearsIn: [Episode!]!
@@ -754,7 +754,7 @@ Now you know what a GraphQL object type looks like, and how to read the basics o
 
 Every field on a GraphQL object type can have zero or more arguments, for example the length field below:
 
-```json
+```graphql
 type Starship {
   id: ID!
   name: String!
@@ -770,7 +770,7 @@ __Arguments can be either required or optional__. When an argument is optional, 
 
 Most types in your schema will just be normal object types, but __there are two types that are special within a schema__:
 
-```json
+```graphql
 schema {
   query: Query
   mutation: Mutation
@@ -779,7 +779,7 @@ schema {
 
 __Every GraphQL service has a query type and may or may not have a mutation type__. These types are the same as a regular object type, but __they are special because they define the entry point of every GraphQL query__. So if you see a query that looks like:
 
-```json
+```graphql
 query {
   hero {
     name
@@ -807,7 +807,7 @@ returns:
 
 __That means that the GraphQL service needs to have a `Query` type__ with `hero` and `droid` fields:
 
-```json
+```graphql
 type Query {
   hero(episode: Episode): Character
   droid(id: ID!): Droid
@@ -824,7 +824,7 @@ A GraphQL object type has a name and fields, but at some point those fields have
 
 In the following query, the `name` and `appearsIn` fields __will resolve to scalar types__:
 
-```json
+```graphql
 {
   hero {
     name
@@ -877,7 +877,7 @@ Also called Enums, enumeration types are a __special kind of scalar that is rest
 
 Here's what an enum definition might look like in the GraphQL schema language:
 
-```json
+```graphql
 enum Episode {
   NEWHOPE
   EMPIRE
@@ -893,7 +893,7 @@ Note that GraphQL service implementations in various languages will have their o
 
 Object types, scalars, and enums are the only kinds of types you can define in GraphQL. But when you use the types in other parts of the schema, or in your query variable declarations, you can apply additional type modifiers that affect validation of those values. Let's look at an example:
 
-```json
+```graphql
 type Character {
   name: String!
   appearsIn: [Episode]!
@@ -904,7 +904,7 @@ Here, we're using a `String` type and marking it as __Non-Null by adding an excl
 
 The Non-Null type modifier can also be used when defining arguments for a field, which will cause the GraphQL server to return a validation error if a null value is passed as that argument, whether in the GraphQL string or in the variables.
 
-```json
+```graphql
 query DroidById($id: ID!) {
   droid(id: $id) {
     name
@@ -942,13 +942,13 @@ Lists work in a similar way: We can use a type modifier to mark a type as a List
 
 The Non-Null and List modifiers can be combined. For example, you can have a List of Non-Null Strings:
 
-```txt
+```graphql
 myField: [String!]
 ```
 
 __This means that the list itself can be null, but it can't have any null members__. For example, in JSON:
 
-```json
+```graphql
 myField: null // valid
 myField: [] // valid
 myField: ["a", "b"] // valid
@@ -957,13 +957,13 @@ myField: ["a", null, "b"] // error
 
 Now, let's say we defined a Non-Null List of Strings:
 
-```json
+```graphql
 myField: [String]!
 ```
 
 This means that the list itself cannot be null, but it can contain null values:
 
-```json
+```graphql
 myField: null // error
 myField: [] // valid
 myField: ["a", "b"] // valid
@@ -978,7 +978,7 @@ Like many type systems, GraphQL supports interfaces. __An Interface is an abstra
 
 For example, you could have an interface Character that represents any character in the Star Wars trilogy:
 
-```json
+```graphql
 interface Character {
   id: ID!
   name: String!
@@ -991,7 +991,7 @@ This means that any type that implements `Character` __needs to have these exact
 
 For example, here are some types that might implement Character:
 
-```json
+```graphql
 type Human implements Character {
   id: ID!
   name: String!
@@ -1017,7 +1017,7 @@ Interfaces are useful when you want to return an object or set of objects, but t
 For example, note that the following query produces an error:
 
 
-```json
+```graphql
 query HeroForEpisode($ep: Episode!) {
   hero(episode: $ep) {
     name
@@ -1056,7 +1056,7 @@ The __hero field returns the type `Character`__, which means it __might be eithe
 
 To ask for a field on a specific object type, __you need to use an inline fragment__:
 
-```json
+```graphql
 query HeroForEpisode($ep: Episode!) {
   hero(episode: $ep) {
     name
@@ -1092,7 +1092,7 @@ returns:
 
 Union types share similarities with interfaces; however, they lack the ability to define any shared fields among the constituent types.
 
-```txt
+```graphql
 union SearchResult = Human | Droid | Starship
 ```
 
@@ -1100,7 +1100,7 @@ Wherever we return a `SearchResult` type in our schema, __we might get a__ `Huma
 
 In this case, if you query a field that returns the `SearchResult` union type, you need to use an inline fragment to be able to query any fields at all:
 
-```json
+```graphql
 {
   search(text: "an") {
     __typename
@@ -1150,7 +1150,7 @@ __The `__typename` field resolves to a String which lets you differentiate diffe
 
 Also, __in this case, since `Human` and `Droid` share a common interface (`Character`), you can query their common fields in one place rather than having to repeat the same fields across multiple types__:
 
-```json
+```graphql
 {
   search(text: "an") {
     __typename
@@ -1177,7 +1177,7 @@ Note that name is still specified on Starship because otherwise it wouldn't show
 
 __So far, we've only talked about passing scalar values, like `enums` or `strings`__, as arguments into a field. But __you can also easily pass complex objects__. This is particularly valuable in the case of mutations, where you might want to pass in a whole object to be created. In the GraphQL schema language, `input types` look exactly the same as regular object types, but with the __keyword `input` instead of `type`__:
 
-```json
+```graphql
 input ReviewInput {
   stars: Int!
   commentary: String
@@ -1186,7 +1186,7 @@ input ReviewInput {
 
 Here is how you could use the input object type in a mutation:
 
-```json
+```graphql
 mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   createReview(episode: $ep, review: $review) {
     stars
@@ -1230,7 +1230,7 @@ For our Star Wars example, __the file starWarsValidation-test.ts contains a numb
 
 To start, let's take a complex valid query. This is a nested query, similar to an example from the previous section, but with the duplicated fields factored out into a fragment:
 
-```json
+```graphql
 
 {
   hero {
@@ -1392,7 +1392,7 @@ And this query is valid. Let's take a look at some invalid queriesâ€¦
 __A fragment cannot refer to itself or create a cycle__, as this could result in an unbounded result! Here's the same query above but without the explicit three levels of nesting:
 
 
-```json
+```graphql
 {
   hero {
     ...NameAndAppearancesAndFriends
@@ -1428,7 +1428,7 @@ returns:
 
 __When we query for fields, we have to query for a field that exists on the given type__. So as `hero` returns a `Character`, we have to query for a field on `Character`. That type does not have a favoriteSpaceship field, so this query is invalid:
 
-```json
+```graphql
 
 # INVALID: favoriteSpaceship does not exist on Character
 {
@@ -1458,7 +1458,7 @@ returns:
 
 Whenever we query for __a field and it returns something other than a `scalar` or an `enum`__, we need to specify what data we want to get back from the field. __`Hero` returns a `Character`, and we've been requesting fields like `name` and `appearsIn` on it; if we omit that, the query will not be valid__:
 
-```json
+```graphql
 # INVALID: hero is not a scalar, so fields are needed
 {
   hero
@@ -1485,7 +1485,7 @@ returns:
 
 Similarly, __if a field is a `scalar`, it doesn't make sense to query for additional fields on it__, and doing so will make the query invalid:
 
-```json
+```graphql
 
 # INVALID: name is a scalar, so fields are not permitted
 {
@@ -1517,7 +1517,7 @@ returns:
 
 Earlier, it was noted that a query can only query for fields on the type in question; when we query for hero which returns a Character, we can only query for fields that exist on Character. What happens if we want to query for R2-D2s primary function, though?
 
-```json
+```graphql
 # INVALID: primaryFunction does not exist on Character
 {
   hero {
@@ -1547,7 +1547,7 @@ returns:
 
 That query is invalid, because `primaryFunction` is not a field on `Character`. We want some way of indicating that we wish to fetch `primaryFunction` if the `Character` is a `Droid`, and to ignore that field otherwise. We can use the fragments we introduced earlier to do this. By setting up a fragment defined on `Droid` and including it, we ensure that we only query for primaryFunction where it is defined.
 
-```json
+```graphql
 {
   hero {
     name
@@ -1575,7 +1575,7 @@ returns:
 
 This query is valid, but it's a bit verbose; named fragments were valuable above when we used them multiple times, but we're only using this one once. Instead of using a named fragment, we can use an inline fragment; this still allows us to indicate the type we are querying on, but without naming a separate fragment:
 
-```json
+```graphql
 {
   hero {
     name
@@ -1607,7 +1607,7 @@ After being validated, a GraphQL query is executed by a GraphQL server which ret
 
 GraphQL cannot execute a query without a type system, let's use an example type system to illustrate executing a query. This is a part of the same type system used throughout the examples in these articles:
 
-```json
+```graphql
 type Query {
   human(id: ID!): Human
 }
@@ -1631,7 +1631,7 @@ type Starship {
 
 In order to describe what happens when a query is executed, let's use an example to walk through.
 
-```json
+```graphql
 {
   human(id: 1002) {
     name
@@ -1678,7 +1678,7 @@ At the top level of every GraphQL server is a type that represents all of the po
 
 In this example, our Query type provides a field called human which accepts the argument id. The resolver function for this field likely accesses a database and then constructs and returns a `Human` object.
 
-```json
+```graphql
 Query: {
   human(obj, args, context, info) {
     return context.db.loadHumanByID(args.id).then(
@@ -1699,7 +1699,7 @@ This example is written in JavaScript, however GraphQL servers can be built in m
 
 Let's take a closer look at what's happening in this resolver function.
 
-```json
+```graphql
 human(obj, args, context, info) {
   return context.db.loadHumanByID(args.id).then(
     userData => new Human(userData)
@@ -1715,7 +1715,7 @@ Notice that __while the resolver function needs to be aware of Promises, the Gra
 
 __Now that a Human object is available, GraphQL execution can continue with the fields requested on it__.
 
-```json
+```graphql
 Human: {
   name(obj, args, context, info) {
     return obj.name
@@ -1733,7 +1733,7 @@ In fact, many GraphQL libraries will let you omit resolvers this simple and will
 
 __While the `name` field is being resolved, the `appearsIn` and `starships` fields can be resolved concurrently__. The `appearsIn` field could also have a trivial resolver, but let's take a closer look:
 
-```json
+```graphql
 Human: {
   appearsIn(obj) {
     return obj.appearsIn // returns [ 4, 5, 6 ]
@@ -1749,7 +1749,7 @@ __This is an example of scalar coercion__. The type system knows what to expect 
 
 We've already seen a bit of what happens when a field returns a list of things with the appearsIn field above. It returned a list of enum values, and since that's what the type system expected, each item in the list was coerced to the appropriate enum value. What happens when the starships field is resolved?
 
-```json
+```graphql
 Human: {
   starships(obj, args, context, info) {
     return obj.starshipIDs.map(
@@ -1771,7 +1771,7 @@ As each field is resolved, __the resulting value is placed into a key-value map 
 
 Let's take one last look at the original query to see how all these resolving functions produce a result:
 
-```json
+```graphql
 {
   human(id: 1002) {
     name
@@ -1816,7 +1816,7 @@ For our Star Wars example, the file starWarsIntrospection-test.ts contains a num
 
 We designed the type system, so we know what types are available, but if we didn't, we can ask GraphQL, by querying the __schema field, always available on the root type of a Query. Let's do so now, and ask what types are available.
 
-```json
+```graphql
 {
   __schema {
     types {
@@ -1928,7 +1928,7 @@ Wow, that's a lot of types! What are they? Let's group them:
 
 Now, let's try and figure out a good place to start exploring what queries are available. When we designed our type system, we specified what type all queries would start at; let's ask the introspection system about that!
 
-```json
+```graphql
 {
   __schema {
     queryType {
@@ -1956,7 +1956,7 @@ And that matches what we said in the type system section, that the Query type is
 
 It is often useful to examine one specific type. Let's take a look at the Droid type:
 
-```json
+```graphql
 {
   __type(name: "Droid") {
     name
@@ -1978,7 +1978,7 @@ returns:
 
 What if we want to know more about Droid, though? For example, is it an interface or an object?
 
-```json
+```graphql
 {
   __type(name: "Droid") {
     name
@@ -2002,7 +2002,7 @@ returns:
 
 `kind` returns a `__TypeKind` enum, one of whose values is `OBJECT`. If we asked about Character instead we'd find that it is an interface:
 
-```json
+```graphql
 {
   __type(name: "Character") {
     name
@@ -2026,7 +2026,7 @@ returns:
 
 It's useful for an object to know what fields are available, so let's ask the introspection system about Droid:
 
-```json
+```graphql
 {
   __type(name: "Droid") {
     name
@@ -2103,7 +2103,7 @@ id looks a bit weird there, it has no name for the type. That's because it's a â
 
 Similarly, both friends and appearsIn have no name, since they are the LIST wrapper type. We can query for ofType on those types, which will tell us what these are lists of.
 
-```json
+```graphql
 {
   __type(name: "Droid") {
     name
@@ -2202,7 +2202,7 @@ returns:
 Let's end with a feature of the introspection system particularly useful for tooling; let's ask the system for documentation!
 
 
-```json
+```graphql
 {
   __type(name: "Droid") {
     name
